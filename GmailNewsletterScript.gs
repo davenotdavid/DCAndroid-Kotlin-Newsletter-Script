@@ -1,5 +1,7 @@
+// TODO: Include GDG-DC event scheduled for March 25
 // TODO: Remove duplicates in the arrays
 // TODO: Possibly integrate with Google Docs for formatting (i.e. spacing in-between paragraphs, font, and etc.)?
+// TODO: Modify Flutter regexes a bit so that the double asterisks (bold-style encoding) are not included in the draft
 
 // Despite Apps Script being based on JS, classes aren't supported 
 // yet on this engine. That said, here's an anonymous "class" used 
@@ -39,7 +41,7 @@ var dcKotlinHandle = "@DCKotlin";
 var dcAndroidUrl = "https://twitter.com/DCAndroid";
 var dcKotlinUrl = "https://twitter.com/DCKotlin";
 
-// Android Weekly Newsletter:
+// Android Weekly:
 // Match starting from the following headers succeeding with all chars 
 // and white space chars up until a double line break (the paragraph 
 // spacing for this newsletter).
@@ -47,7 +49,8 @@ var artAndTutRegexAndroid = /(\*\* Articles & Tutorials[\s\S]*?)(?:\r?\n){3}/;
 var newsRegexAndroid = /(\*\* News[\s\S]*?)(?:\r?\n){3}/;
 var specialsRegexAndroid = /(\*\* Specials[\s\S]*?)(?:\r?\n){3}/;
 
-// TODO: Not the prettiest regex for the Flutter Weekly newsletter, but gets the job done for now
+// TODO: Not the prettiest regexs for the Flutter Weekly newsletter, but gets the job done for now
+var announcementRegexFlutter = /\*\* Announcements[\s\S]*?\*\* Articles and tutorials/;
 var artAndTutRegexFlutter = /\*\* Articles and tutorials[\s\S]*?\*\* Videos and media/;
 
 // TODO: Not the prettiest regex for the Kotlin Weekly newsletter, but gets the job done for now
@@ -136,8 +139,8 @@ function searchAndroidWeekly() {
   }
 }
 
-// This function will basically store the top article & tutorial of each 
-// Kotlin Weekly newsletter.
+// If any, this function will basically store the top article & tutorial of 
+// each Kotlin Weekly newsletter.
 function searchKotlinWeekly() {
   var query = "in:inbox subject:(Kotlin Weekly) newer_than:30d";
   var threads = GmailApp.search(query);
@@ -157,8 +160,9 @@ function searchKotlinWeekly() {
   }
 }
 
-// This function will basically store the top article & tutorial of each 
-// Flutter Weekly newsletter.
+// If any, this function will basically store the top article & tutorial  
+// while prioritizing and storing all announcements from each Flutter 
+// Weekly newsletter.
 function searchFlutterWeekly() {
   var query = "in:inbox subject:(Flutter Weekly) newer_than:30d";
   var threads = GmailApp.search(query);
@@ -166,6 +170,15 @@ function searchFlutterWeekly() {
   for each (thread in threads) {    
     var messages = thread.getMessages();
     var body = messages[0].getPlainBody();
+    
+    var containsAnnouncements = announcementRegexFlutter.test(body);
+    if (containsAnnouncements) {
+      var matches = announcementRegexFlutter.exec(body);
+      var elements = matches[0].split("\n");
+      var filteredElements = getFilteredElementsFlutter(elements);      
+      
+      pushPostsIntoAnnouncements(filteredElements, announcementArray);
+    }
     
     var containsArtAndTut = artAndTutRegexFlutter.test(body);
     if (containsArtAndTut) {
@@ -276,7 +289,13 @@ function getFilteredElementsFlutter(elements) {
     var startCharRegex = /^[a-zA-Z\*]/;
     var startsWithChar = startCharRegex.test(item);
         
-    // Excludes the header that was originally part of the regex match.
+    // Excludes the "Announcements" header that was originally part of the 
+    // regex match.
+    var announcementHeadRegex = /\*\* Announcements/;
+    var containsAnnouncementHead = announcementHeadRegex.test(item);    
+    
+    // Excludes the "Articles & Tutorials" header that was originally part of 
+    // the regex match.
     var artAndTutHeadRegex = /\*\* Articles and tutorials/;
     var containsArtAndTutHead = artAndTutHeadRegex.test(item);
         
@@ -285,7 +304,7 @@ function getFilteredElementsFlutter(elements) {
     var sponsRegex = /Sponsored/;
     var containsSponsTxt = sponsRegex.test(item);
         
-    var isLegitimatePost = startsWithChar && !containsArtAndTutHead && !containsSponsTxt
+    var isLegitimatePost = startsWithChar && !containsAnnouncementHead && !containsArtAndTutHead && !containsSponsTxt
     return isLegitimatePost;
   });
   
