@@ -2,13 +2,10 @@
 // TODO: Modify Flutter regexes a bit so that the double asterisks (bold-style encoding) are not included in the draft
 
 // TODO: Potential things to include for the next (June) newsletter:
-// - DevFest DC @ CapOne announcement with promo code: "DEVALUM" (https://www.eventbrite.com/e/devfest-dc-2019-tickets-58835481509?aff=bloomshift&discount=devAlum&mc_eid=03e6c7e8bc&mc_cid=94794428e4)
-// - DevFest DC schedule (https://www.devfestdc.org/schedule/?utm_source=newsletter&utm_medium=email&utm_campaign=nonpaid/&mc_cid=567aadd5f6&mc_eid=03e6c7e8bc)
+// - DevFestDC recap videos/content
 // - Google I/O recap videos
 // - Flutter International Hackathon (https://flutterhackathon.com)
-// - First DCFlutter meetup (https://www.meetup.com/DCFlutter/events/261853524)
 // - Donn's Flutter article (https://www.donnfelker.com/flutter-just-might-work)
-// - TF meetup (https://www.meetup.com/gdg-dc/events/261082799)
 // - Android Summit 2019 (https://www.androidsummit.org/ ; 50% DISCOUNT courtesty of WWCODE https://www.eventbrite.com/e/android-summit-2019-tickets-59378886849?discount=wwcode50)
 // - ... and of course some other relevant content from the previous newsletter drafts
 
@@ -220,8 +217,18 @@ function createDraft() {
     month = monthNames[date.getMonth() + 1];
   }
   var subject = Utilities.formatString("DCAndroid/Kotlin %s Newsletter Draft", month);
+  
+  // Here's where the magic happens.
+  GmailApp.createDraft(jared, subject, "Body to be replaced", {
+    cc: joni,
+    htmlBody: getEncodedHtml()
+  });
+}
 
-  var encodedBody = Utilities.formatString("<i>%s</i><br />&nbsp;<br />%s<br />&nbsp;<br /><b>%s</b><br />&nbsp;<br />%s<br />&nbsp;<br /><b>%s</b><br />&nbsp;<br /><i>// TODO: Fill out manually</i><br />&nbsp;<br /><b>%s</b><br />&nbsp;<br /><i>// TODO: Fill out manually</i><br />&nbsp;<br /><b>%s</b><br />&nbsp;<br />", 
+function getEncodedHtml() {
+  var html = '<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"></head><body style="font-family: Verdana, sans-serif; font-size: 9pt; line-height: 1.15;">%s</body></html>';
+  
+  var encodedBody = Utilities.formatString("<i>%s</i><br />%s<br /><b>%s</b><br />%s<br /><b>%s</b><br /><i>// TODO: Fill out manually</i><br /><b>%s</b><br /><i>// TODO: Fill out manually</i><br /><b>%s</b><br />", 
                                     disclaimer,
                                     greeting, 
                                     callForTalksHeader, 
@@ -233,7 +240,7 @@ function createDraft() {
   
   for each (post in announcementArray) {
     var htmlEncoding = Utilities.formatString(
-      "\-<a href=%s>%s</a>: %s<br />&nbsp;<br />", 
+      "\-<a href=%s>%s</a>: %s<br />", 
       post.url || "", 
       post.title || "", 
       post.description || ""
@@ -244,7 +251,7 @@ function createDraft() {
 
   for each (post in mediaArray) {
     var htmlEncoding = Utilities.formatString(
-      "\-<a href=%s>%s</a>: %s<br />&nbsp;<br />", 
+      "\-<a href=%s>%s</a>: %s<br />", 
       post.url || "", 
       post.title || "", 
       post.description || ""
@@ -253,7 +260,7 @@ function createDraft() {
     encodedBody += htmlEncoding;
   }
   
-  var salutationTxt = Utilities.formatString("%s<br />&nbsp;<br />%s<br><a href=%s>%s</a> / <a href=%s>%s</a>", 
+  var salutationTxt = Utilities.formatString("%s<br />%s<br><a href=%s>%s</a> / <a href=%s>%s</a>", 
                                              salutation, 
                                              sender, 
                                              dcAndroidUrl, 
@@ -261,13 +268,13 @@ function createDraft() {
                                              dcKotlinUrl, 
                                              dcKotlinHandle
                                             );
+  
   encodedBody += salutationTxt;
   
-  // Here's where the magic happens.
-  GmailApp.createDraft(jared, subject, "Body to be replaced", {
-    cc: joni,
-    htmlBody: encodedBody
-  });
+  var encodedHtml = Utilities.formatString(html, encodedBody);
+  Logger.log('Encoded HTML: ' + encodedHtml);
+  
+  return encodedHtml;
 }
 
 // End Region
