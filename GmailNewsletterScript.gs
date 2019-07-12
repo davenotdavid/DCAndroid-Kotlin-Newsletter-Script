@@ -1,11 +1,6 @@
-// TODO: Possibly integrate with Google Docs for formatting (i.e. spacing in-between paragraphs, font, and etc.), or simply apply HTML-encoded formatting?
-// TODO: Modify Flutter regexes a bit so that the double asterisks (bold-style encoding) are not included in the draft
-
-// TODO: Potential things to include for the next (June) newsletter:
-// - DevFestDC recap videos/content
+// TODO: Potential things to include for the next (August) newsletter:
+// - DevFestDC recap videos/content (https://www.youtube.com/watch?v=oYQh0ZR0Lec for starters)
 // - Google I/O recap videos
-// - Flutter International Hackathon (https://flutterhackathon.com)
-// - Donn's Flutter article (https://www.donnfelker.com/flutter-just-might-work)
 // - Android Summit 2019 (https://www.androidsummit.org/ ; 50% DISCOUNT courtesty of WWCODE https://www.eventbrite.com/e/android-summit-2019-tickets-59378886849?discount=wwcode50)
 // - ... and of course some other relevant content from the previous newsletter drafts
 
@@ -37,7 +32,7 @@ var monthNames = ["January", "February", "March", "April", "May", "June",
 var disclaimer = "\/\*\* This draft was initially run and created by Google Apps Script \*\*\/";
 var greeting = "Greetings Green Robots and Kolleagues,";
 var callForTalksHeader = "Call for Talks";
-var dcAndKotGdgEventsHeader = "DCAndroid/Kotlin and GDG-DC Upcoming Events";
+var mainEventsHeader = "Main Affiliated Upcoming Events";
 var otherEventsHeader = "Other Upcoming Events";
 var newsMediaHeader = "News/Media";
 var callForTalksBody = "What\'s first is first - if you\'re ever interested in giving a talk on an Android-related (or Kotlin, Flutter, or heck, a Google-related) technology sometime soon, please don\'t hesitate to ask! We\'re very open about it.";
@@ -233,7 +228,7 @@ function getEncodedHtml() {
                                     greeting, 
                                     callForTalksHeader, 
                                     callForTalksBody,
-                                    dcAndKotGdgEventsHeader, 
+                                    mainEventsHeader, 
                                     otherEventsHeader, 
                                     newsMediaHeader
                                    );
